@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Page Not Found — {{ app_name }}{% endblock %}
+{% block body_class %}error-page{% endblock %}
+
+{% block content %}
+<div class="error-shell">
+  <div class="error-code" aria-hidden="true">404</div>
+  <h1 class="error-title">Lost in the stacks.</h1>
+  <p class="error-copy">That title doesn't exist — or it has already rolled its credits.</p>
+  <div class="error-actions">
+    <a class="btn btn--gold" href="{{ url_for('home') }}">Back to Home</a>
+    <a class="btn btn--glass" href="{{ url_for('explore') }}">Explore Catalog</a>
+  </div>
+</div>
+{% endblock %}

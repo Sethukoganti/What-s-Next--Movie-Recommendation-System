@@ -1,0 +1,51 @@
+.mouse-cursor,
+.mouse-cursor-dot {
+  position: fixed;
+  pointer-events: none;
+  z-index: 10000;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.mouse-cursor {
+  width: 40px;
+  height: 40px;
+  border: 2px solid var(--accent-primary);
+  border-radius: 50%;
+  margin-left: -20px;
+  margin-top: -20px;
+  transition: transform 0.2s ease, width 0.3s ease, height 0.3s ease, border-color 0.3s ease;
+}
+
+.mouse-cursor-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--accent-primary);
+  border-radius: 50%;
+  margin-left: -3px;
+  margin-top: -3px;
+  transition: transform 0.1s ease, width 0.3s ease, height 0.3s ease, background 0.3s ease;
+}
+
+.mouse-cursor.cursor-hover {
+  width: 60px;
+  height: 60px;
+  margin-left: -30px;
+  margin-top: -30px;
+  border-color: var(--accent-secondary);
+}
+
+.mouse-cursor-dot.cursor-dot-hover {
+  width: 10px;
+  height: 10px;
+  margin-left: -5px;
+  margin-top: -5px;
+  background: var(--accent-secondary);
+}
+
+@media (max-width: 1024px) {
+  .mouse-cursor,
+  .mouse-cursor-dot {
+    display: none;
+  }
+}

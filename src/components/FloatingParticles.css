@@ -1,0 +1,40 @@
+.floating-particles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+[data-theme="dark"] .floating-particles {
+  opacity: 0.35;
+}
+
+[data-theme="light"] .floating-particles {
+  opacity: 0.2;
+}
+
+/* Mouse interaction reactive glow overlay */
+.floating-particles::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(255, 22, 79, 0.06) 0%,
+    transparent 40%
+  );
+  pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  .floating-particles {
+    opacity: 0.2;
+  }
+}

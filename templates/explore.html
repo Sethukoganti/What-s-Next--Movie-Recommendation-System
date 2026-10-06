@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% block title %}Explore — {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-shell page-shell--top">
+  <header class="page-head">
+    <h1 class="page-title">Explore</h1>
+    <p class="page-lede">Filter the entire catalog by genre, year, rating, language and more.</p>
+  </header>
+</div>
+
+<section class="filter-bar glass-panel" id="filterBar" aria-label="Filters">
+  <div class="filter-bar__row">
+    <div class="filter-group">
+      <span class="filter-group__label">Type</span>
+      <div class="pill-row" id="filterMediaType">
+        <button class="pill{% if not selected.media_type %} is-active{% endif %}" data-value="" data-key="media_type">All</button>
+        <button class="pill{% if selected.media_type == 'movie' %} is-active{% endif %}" data-value="movie" data-key="media_type">Movies</button>
+        <button class="pill{% if selected.media_type == 'tv' %} is-active{% endif %}" data-value="tv" data-key="media_type">Series</button>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <span class="filter-group__label">Sort by</span>
+      <div class="pill-row" id="filterSort">
+        <button class="pill{% if selected.sort_by == 'popularity' %} is-active{% endif %}" data-value="popularity" data-key="sort_by">Popularity</button>
+        <button class="pill{% if selected.sort_by == 'rating' %} is-active{% endif %}" data-value="rating" data-key="sort_by">Rating</button>
+        <button class="pill{% if selected.sort_by == 'date' %} is-active{% endif %}" data-value="date" data-key="sort_by">Release Date</button>
+        <button class="pill{% if selected.sort_by == 'title' %} is-active{% endif %}" data-value="title" data-key="sort_by">Title A–Z</button>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <span class="filter-group__label">Language</span>
+      <select class="select" id="filterLanguage">
+        <option value="">Any Language</option>
+        {% for code, label in languages %}
+          <option value="{{ code }}" {% if selected.language == code %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+
+  <div class="filter-bar__row">
+    <div class="filter-group filter-group--grow">
+      <span class="filter-group__label">Genre</span>
+      <div class="pill-row pill-row--wrap" id="filterGenres">
+        {% for g in genre_options %}
+          <button class="pill{% if (selected.genres | default('')) and (g.id | string) in selected.genres.split(',') %} is-active{% endif %}"
+                  data-value="{{ g.id }}" data-key="genres">{{ g.name }}</button>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="filter-bar__row">
+    <div class="filter-group slider-group">
+      <span class="filter-group__label">Year <em id="yearLabel">1900 – {{ current_year }}</em></span>
+      <div class="dual-range" data-dual="year" data-min="1900" data-max="{{ current_year }}" data-lo="{{ selected.year_from | default(1900) }}" data-hi="{{ selected.year_to | default(current_year) }}">
+        <div class="dual-range__track"><div class="dual-range__fill" data-fill></div></div>
+        <input type="range" min="1900" max="{{ current_year }}" step="1" value="{{ selected.year_from | default(1900) }}" data-lo aria-label="Year from">
+        <input type="range" min="1900" max="{{ current_year }}" step="1" value="{{ selected.year_to | default(current_year) }}" data-hi aria-label="Year to">
+      </div>
+    </div>
+
+    <div class="filter-group slider-group">
+      <span class="filter-group__label">Minimum Rating <em id="ratingLabel">{{ selected.rating_min | default(0) }}+</em></span>
+      <div class="dual-range dual-range--single" data-dual="rating" data-min="0" data-max="9" data-lo="{{ selected.rating_min | default(0) }}" data-hi="9">
+        <div class="dual-range__track"><div class="dual-range__fill" data-fill></div></div>
+        <input type="range" min="0" max="9" step="1" value="{{ selected.rating_min | default(0) }}" data-lo aria-label="Minimum rating">
+        <input type="range" min="0" max="9" step="1" value="9" data-hi aria-hidden="true" tabindex="-1" disabled>
+      </div>
+    </div>
+
+    <div class="filter-group slider-group">
+      <span class="filter-group__label">Runtime <em id="runtimeLabel">{{ selected.runtime_min | default(0) }}+ min</em></span>
+      <div class="dual-range dual-range--single" data-dual="runtime" data-min="0" data-max="300" data-lo="{{ selected.runtime_min | default(0) }}" data-hi="300">
+        <div class="dual-range__track"><div class="dual-range__fill" data-fill></div></div>
+        <input type="range" min="0" max="300" step="10" value="{{ selected.runtime_min | default(0) }}" data-lo aria-label="Minimum runtime">
+        <input type="range" min="0" max="300" step="10" value="300" data-hi aria-hidden="true" tabindex="-1" disabled>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <span class="filter-group__label">Season Count</span>
+      <select class="select" id="filterSeasons">
+        <option value="0">Any</option>
+        {% for n in range(1, 11) %}
+          <option value="{{ n }}" {% if (selected.seasons_min | default(0)) == n %}selected{% endif %}>&ge; {{ n }} seasons</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+
+  <div class="filter-bar__active" id="activeFilters">
+    <span class="active-filters__label">Active filters:</span>
+    <div class="active-filters__pills" id="activePills">
+      {% if selected.q %}
+        <span class="chip">“{{ selected.q }}”<button class="chip__x" data-remove="q" aria-label="Remove">&times;</button></span>
+      {% endif %}
+      {% if selected.genres %}
+        {% for gid in selected.genres.split(',') %}
+          {% set gname = genre_options | selectattr("id", "equalto", gid | int) | map(attribute="name") | first | default('') %}
+          {% if gname %}<span class="chip">{{ gname }}<button class="chip__x" data-remove-genre="{{ gid }}" aria-label="Remove">&times;</button></span>{% endif %}
+        {% endfor %}
+      {% endif %}
+      {% if selected.language %}
+        <span class="chip">{{ dict(languages).get(selected.language, selected.language) }}<button class="chip__x" data-remove="language" aria-label="Remove">&times;</button></span>
+      {% endif %}
+      {% if selected.year_from and (selected.year_from | int) > 1900 %}
+        <span class="chip">Since {{ selected.year_from }}<button class="chip__x" data-remove="year_from" aria-label="Remove">&times;</button></span>
+      {% endif %}
+      {% if selected.year_to and (selected.year_to | int) < current_year %}
+        <span class="chip">Through {{ selected.year_to }}<button class="chip__x" data-remove="year_to" aria-label="Remove">&times;</button></span>
+      {% endif %}
+      {% if (selected.rating_min | default(0) | int) > 0 %}
+        <span class="chip">{{ selected.rating_min }}★+<button class="chip__x" data-remove="rating_min" aria-label="Remove">&times;</button></span>
+      {% endif %}
+      <a class="chip chip--clear" href="{{ url_for('explore') }}">Clear All &times;</a>
+    </div>
+  </div>
+</section>
+
+<div class="page-shell">
+  <div class="results-meta">
+    <h2 class="row-title" id="resultsLabel">{{ explore_label }}</h2>
+    {% if total_results and total_results > 0 %}
+      <span class="results-count">Showing {{ explore_results | length }} of <span id="totalResults">{{ total_results }}</span> titles</span>
+    {% endif %}
+  </div>
+
+  <div class="results-grid" id="resultsGrid">
+    {% for movie in explore_results %}
+      <div class="grid-cell" data-cell>{% with movie=movie %}{% include "components/_card.html" %}{% endwith %}</div>
+    {% endfor %}
+    {% if not explore_results %}
+      <div class="empty-state">
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="27" cy="27" r="16"/><path d="m39 39 12 12" stroke-linecap="round"/><path d="M27 19v16M19 27h16" stroke-linecap="round" opacity=".6"/></svg>
+        <h3>No titles found</h3>
+        <p>Try widening your filters or search for something else.</p>
+        <a class="btn btn--glass" href="{{ url_for('explore') }}">Clear Filters</a>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="load-more" id="loadMoreWrap">
+    <button class="btn btn--glass" id="loadMoreBtn" hidden>Load More</button>
+    <span class="load-more__spinner" id="loadMoreSpinner" hidden aria-hidden="true"></span>
+  </div>
+</div>
+
+<script type="application/json" id="exploreInitial">{{ { "page": page_obj.page if page_obj else 1, "has_more": page_obj.has_more if page_obj else false } | tojson }}</script>
+{% endblock %}

@@ -1,0 +1,202 @@
+/* MoviePoster3D styles for DOM overlays and interactions */
+
+.poster-overlay {
+  position: absolute;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.poster-detail-card {
+  position: absolute;
+  background: rgba(5, 5, 10, 0.95);
+  border: 1px solid rgba(255, 22, 79, 0.5);
+  border-radius: 8px;
+  padding: 20px;
+  pointer-events: all;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 0 30px rgba(255, 22, 79, 0.3), var(--shadow-lg);
+  min-width: 220px;
+  animation: posterSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.poster-detail-card h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--accent-primary);
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+
+.poster-detail-card p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.poster-detail-card .poster-meta {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.poster-detail-card .poster-rating {
+  color: var(--accent-secondary);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.poster-detail-card .poster-year {
+  color: var(--text-tertiary);
+  font-size: 0.8rem;
+}
+
+.poster-close-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(255, 22, 79, 0.2);
+  border: 1px solid var(--accent-primary);
+  color: var(--accent-primary);
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s var(--transition-smooth);
+}
+
+.poster-close-btn:hover {
+  background: var(--accent-primary);
+  color: white;
+}
+
+@keyframes posterSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* 3D mesh interaction hints */
+.poster-mesh {
+  cursor: pointer;
+}
+
+/* Selected poster glow ring */
+.poster-mesh--pulled {
+  filter: drop-shadow(0 0 20px rgba(255, 22, 79, 0.8));
+}
+
+/* Parallax depth layers */
+.parallax-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.parallax-layer--1 { z-index: 0; }
+.parallax-layer--2 { z-index: 1; }
+.parallax-layer--3 { z-index: 2; }
+.parallax-layer--4 { z-index: 3; }
+.parallax-layer--5 { z-index: 4; }
+.parallax-layer--6 { z-index: 5; }
+
+/* Floating poster cards in the DOM for the parallax background */
+.floating-poster-bg {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 4px;
+  overflow: hidden;
+  opacity: 0.15;
+  filter: hue-rotate(200deg);
+  transition: opacity 0.3s var(--transition-smooth);
+}
+
+.floating-poster-bg:hover {
+  opacity: 0.25;
+}
+
+.floating-poster-bg__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-tertiary));
+}
+
+/* Post-processing effects container */
+.post-processing-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  mix-blend-mode: screen;
+}
+
+/* Bloom glow layer */
+.bloom-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 22, 79, 0.08) 0%,
+    rgba(155, 44, 255, 0.05) 40%,
+    transparent 70%
+  );
+  animation: bloomPulse 4s ease-in-out infinite alternate;
+}
+
+@keyframes bloomPulse {
+  from { opacity: 0.5; }
+  to { opacity: 1; }
+}
+
+/* Chromatic aberration edge effect */
+.chromatic-aberration {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  box-shadow: inset 0 0 80px rgba(255, 22, 79, 0.06);
+  box-shadow:
+    inset -2px 0 8px rgba(255, 22, 79, 0.04),
+    inset 2px 0 8px rgba(155, 44, 255, 0.04);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .poster-detail-card {
+    min-width: 180px;
+    padding: 14px;
+    font-size: 0.9em;
+  }
+
+  .poster-detail-card h3 {
+    font-size: 1rem;
+  }
+}
+/* Neon glow — accurate CSS box-shadow glow per color */
+.poster-glow { box-shadow: 0 0 30px rgba(255,22,79,0.5), 0 0 60px rgba(0,255,220,0.25); transition: box-shadow 0.3s ease; }
+.poster-glow:hover { box-shadow: 0 0 50px rgba(255,22,79,0.8), 0 0 100px rgba(0,255,220,0.4), inset 0 0 20px rgba(255,255,255,0.1); }

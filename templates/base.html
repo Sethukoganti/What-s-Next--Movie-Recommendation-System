@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" data-user-theme="{% if current_user.is_authenticated and current_user.theme != 'auto' %}{{ current_user.theme }}{% else %}auto{% endif %}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="{{ app_name }} — discover movies and series from around the world with personalized picks, ratings and reviews.">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <title id="titleDoc" data-site="{{ app_name }}">{% block title %}{{ app_name }}{% endblock %}</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
+  <link rel="icon" href="{{ url_for('static', filename='images/favicon.svg') }}" type="image/svg+xml">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/themes.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/3d-effects.css') }}">
+
+  <style>
+    /* Critical first-paint protection: block theme flash before scripts run */
+    html:not([data-theme]) { color-scheme: dark; }
+  </style>
+
+  <script>
+    /* Theme pre-hydration — runs before paint to avoid FOUC */
+    (function () {
+      var saved = null;
+      try { saved = localStorage.getItem('wn:theme'); } catch (e) { /* noop */ }
+      var server = document.documentElement.getAttribute('data-user-theme') || 'auto';
+      var theme = saved || server || 'auto';
+      if (theme === 'auto') {
+        theme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches)
+          ? 'light' : 'dark';
+      }
+      document.documentElement.setAttribute('data-theme', theme === 'light' ? 'light' : 'dark');
+    })();
+  </script>
+</head>
+<body class="js-body">
+
+  {% include "components/_intro.html" %}
+
+  <div class="scroll-progress-bar" id="scrollProgress" aria-hidden="true"></div>
+
+  {% include "components/_navbar.html" %}
+
+  <div class="flash-holder" id="flashHolder" aria-live="polite">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="toast toast--{{ category or 'info' }}" data-toast>
+            <span class="toast__icon" aria-hidden="true">{% if category == 'success' %}&#10003;{% elif category == 'error' %}&#33;{% else %}&#8505;{% endif %}</span>
+            <span class="toast__msg">{{ message }}</span>
+            <button class="toast__close" aria-label="Dismiss">&times;</button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </div>
+
+  <main class="site-main" id="siteMain">
+    {% block content %}{% endblock %}
+  </main>
+
+  {% include "components/_footer.html" %}
+
+  <!-- Bottom navigation (mobile) -->
+  {% include "components/_bottomnav.html" %}
+
+  <!-- Cinematic Spotlight Modal -->
+  <div class="modal-root" id="modalRoot" role="dialog" aria-modal="true" aria-label="Title details" hidden>
+    <div class="modal-scrim" id="modalScrim"></div>
+    <div class="modal-sheet" id="modalSheet" tabindex="-1">
+      <button class="modal-close" id="modalClose" aria-label="Close">&times;</button>
+      <div class="modal-content" id="modalContent"></div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+  <script src="{{ url_for('static', filename='js/theme.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/animations.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/carousel.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/modal.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/search.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/explore.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/charts.js') }}" defer></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('{{ url_for("static", filename="sw.js") }}').catch(function () {});
+      });
+    }
+  </script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}{{ list_data.name }} — {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-shell page-shell--top">
+  <header class="page-head">
+    <h1 class="page-title">{{ list_data.name }}</h1>
+    <p class="page-lede">
+      by <a class="text-link" href="{{ url_for('user_public', username=list_data.username) }}">{{ list_data.username }}</a>
+      · {{ list_data.count }} titles
+      {% if list_data.is_public %}<span class="chip">Public</span>{% else %}<span class="chip">Private</span>{% endif %}
+    </p>
+    {% if list_data.description %}<p class="page-lede">{{ list_data.description }}</p>{% endif %}
+  </header>
+
+  <div class="results-grid">
+    {% for movie in explore_results %}
+      <div class="grid-cell" data-cell>{% with movie=movie %}{% include "components/_card.html" %}{% endwith %}</div>
+    {% endfor %}
+    {% if not explore_results %}
+      <div class="empty-state">
+        <h3>This list is still empty</h3>
+        <p>Check back soon — new titles are on the way.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Coming Soon — {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-shell page-shell--top">
+  <header class="page-head">
+    <h1 class="page-title">Coming Soon</h1>
+    <p class="page-lede">The films and series everyone will be watching next.</p>
+  </header>
+
+  <div class="coming-grid" id="resultsGrid">
+    {% for movie in explore_results %}
+      <article class="coming-card glass-card" data-cell>
+        <div class="coming-card__poster">
+          {% if movie.PosterCard or movie.Poster %}
+            <img class="is-lazy" src="{{ movie.PosterSmall }}" data-lazy="{{ movie.PosterCard or movie.Poster }}" alt="{{ movie.Movie }}" loading="lazy">
+          {% else %}
+            <div class="card__fallback"><span>{{ movie.Movie[:1]|upper }}</span></div>
+          {% endif %}
+          <span class="card__type-pill card__type-pill--{{ 'series' if movie.MediaType == 'tv' else 'movie' }}">{{ movie.TypeLabel }}</span>
+        </div>
+        <div class="coming-card__body">
+          <h3>{{ movie.Movie }}</h3>
+          <p class="coming-card__year">{{ movie.Year or 'TBA' }}</p>
+          {% if movie.Overview %}
+            <p class="coming-card__overview">{{ movie.Overview|truncate(140) }}</p>
+          {% endif %}
+          <button class="btn btn--glass btn--sm" data-role="more" data-id="{{ movie.TmdbID }}" data-type="{{ movie.MediaType }}">More Info</button>
+        </div>
+      </article>
+    {% endfor %}
+    {% if not explore_results %}
+      <div class="empty-state">
+        <h3>Nothing scheduled yet</h3>
+        <p>Check back soon for upcoming releases.</p>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="load-more" id="loadMoreWrap">
+    <button class="btn btn--glass" id="loadMoreBtn" hidden>Load More</button>
+    <span class="load-more__spinner" id="loadMoreSpinner" hidden aria-hidden="true"></span>
+  </div>
+
+  <script type="application/json" id="categoryMeta">{"category": "coming-soon", "page": 1}</script>
+</div>
+{% endblock %}

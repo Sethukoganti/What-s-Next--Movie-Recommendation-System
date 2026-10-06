@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}{{ person.name }} — {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-shell page-shell--top">
+  <section class="person-hero glass-panel">
+    <div class="person-hero__photo">
+      {% if person.profile_large %}
+        <img class="is-lazy" src="{{ person.profile_path }}" data-lazy="{{ person.profile_large }}" alt="{{ person.name }}" loading="lazy">
+      {% else %}
+        <div class="person-hero__initials">{{ person.name[:1]|upper }}</div>
+      {% endif %}
+    </div>
+    <div class="person-hero__info">
+      <h1 class="page-title">{{ person.name }}</h1>
+      <div class="person-hero__meta">
+        {% if person.birthday %}<span>Born {{ person.birthday }}</span>{% endif %}
+        {% if person.deathday %}<span>Died {{ person.deathday }}</span>{% endif %}
+        {% if person.place_of_birth %}<span>{{ person.place_of_birth }}</span>{% endif %}
+        {% if person.known_for_department %}<span class="chip">{{ person.known_for_department }}</span>{% endif %}
+      </div>
+      {% if person.bio %}
+        <p class="person-hero__bio" id="personBio" data-collapse>{{ person.bio }}</p>
+        <button class="text-link" id="personBioToggle" type="button">Read more</button>
+      {% endif %}
+    </div>
+  </section>
+
+  {% if known_for %}
+    <section class="reveal-row">
+      <div class="carousel-row__header">
+        <h2 class="row-title">Known For</h2>
+      </div>
+      <div class="carousel" data-scroll-row>
+        <div class="carousel__track">
+          {% for movie in known_for %}
+            <div class="carousel__item">{% with movie=movie %}{% include "components/_card.html" %}{% endwith %}</div>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+  {% endif %}
+
+  <section class="reveal-row">
+    <div class="carousel-row__header">
+      <h2 class="row-title">Filmography <span class="muted">({{ credits | length }})</span></h2>
+    </div>
+    <div class="filmography-toolbar glass-panel">
+      <div class="pill-row" id="fgType">
+        <button class="pill is-active" data-value="">All</button>
+        <button class="pill" data-value="movie">Movies Only</button>
+        <button class="pill" data-value="tv">Series Only</button>
+      </div>
+      <select class="select" id="fgYear">
+        <option value="">All Years</option>
+        {% for y in years %}
+          <option value="{{ y }}">{{ y }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="results-grid" id="filmographyGrid">
+      {% for movie in credits %}
+        <div class="grid-cell" data-cell data-credit-type="{{ movie.MediaType }}" data-credit-year="{{ movie.Year or '' }}">{% with movie=movie %}{% include "components/_card.html" %}{% endwith %}</div>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+{% endblock %}

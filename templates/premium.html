@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Premium — {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="premium-hero">
+  <div class="premium-hero__glow" aria-hidden="true"></div>
+  <div class="page-shell premium-hero__inner">
+    <span class="chip chip--gold">{{ app_name }} Premium</span>
+    <h1 class="page-title">Watch Smarter. Remember Everything.</h1>
+    <p class="page-lede">
+      Unlock your complete watching history, deep personal recommendations,
+      full statistics, and unlimited lists.
+    </p>
+  </div>
+</div>
+
+<div class="page-shell">
+  <section class="premium-features" id="premiumFeatures">
+    <div class="premium-feature glass-panel reveal-row">
+      <h3>Full Experience Journal</h3>
+      <p>Store your personal experience for every title you watch — your own movie diary that grows with you.</p>
+    </div>
+    <div class="premium-feature glass-panel reveal-row">
+      <h3>Advanced Statistics</h3>
+      <p>Break down your taste by genre, decade and language. Compare your ratings against the community.</p>
+    </div>
+    <div class="premium-feature glass-panel reveal-row">
+      <h3>Deep Recommendations</h3>
+      <p>Recommendations built on your ratings and watch history — not just what's trending.</p>
+    </div>
+    <div class="premium-feature glass-panel reveal-row">
+      <h3>Unlimited Lists</h3>
+      <p>Create as many custom lists as you like and share them with the community.</p>
+    </div>
+    <div class="premium-feature glass-panel reveal-row">
+      <h3>Early Access</h3>
+      <p>Be first to see new drops, upcoming releases, and community picks.</p>
+    </div>
+  </section>
+
+  <section class="premium-plan glass-panel">
+    <div class="premium-plan__price">
+      <span class="premium-plan__amount">Free</span>
+      <span class="premium-plan__period">for a limited time</span>
+    </div>
+    <p class="premium-plan__blurb">
+      Premium is currently complimentary as we build the platform together.
+      Activate it now to claim your profile, ratings, watchlist and statistics.
+    </p>
+
+    {% if current_user.is_authenticated and user_is_premium %}
+      <div class="premium-plan__status">
+        <span class="chip chip--gold">Premium Active</span>
+        <a class="btn btn--glass" href="{{ url_for('stats') }}">View My Stats</a>
+      </div>
+    {% elif current_user.is_authenticated %}
+      <form method="POST" action="{{ url_for('activate_premium') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="btn btn--gold btn--lg">Activate Premium</button>
+      </form>
+    {% else %}
+      <div class="premium-plan__cta">
+        <a class="btn btn--gold btn--lg" href="{{ url_for('signup') }}">Create Account</a>
+        <a class="btn btn--glass" href="{{ url_for('login') }}">Sign In</a>
+      </div>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

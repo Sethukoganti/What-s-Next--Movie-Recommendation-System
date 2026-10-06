@@ -1,0 +1,6 @@
+.personalized-section { padding-top: 100px; }
+.personalized-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+.personal-card { background: linear-gradient(135deg, rgba(255,22,79,0.08), rgba(155,44,255,0.08)); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 24px; }
+.personal-card h3 { font-size: 1.2rem; margin-bottom: 8px; color: var(--text-primary); }
+.personal-score { color: var(--accent-primary); font-weight: 700; font-size: 0.9rem; }
+.personal-reason { color: var(--text-secondary); font-size: 0.85rem; margin-top: 6px; }

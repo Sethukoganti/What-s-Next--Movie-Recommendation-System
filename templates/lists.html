@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}My Lists — {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-shell page-shell--top">
+  <header class="page-head">
+    <h1 class="page-title">Lists</h1>
+    <p class="page-lede">Curate the titles that matter — both for yourself and the community.</p>
+  </header>
+
+  <div class="lists-create glass-panel">
+    <h2 class="row-title">Create a List</h2>
+    <form method="POST" action="{{ url_for('create_list') }}" class="lists-create__form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="form-field">
+        <input type="text" name="name" maxlength="80" placeholder="List name (e.g. Neo-Noir Essentials)" required>
+      </div>
+      <div class="form-field form-field--grow">
+        <input type="text" name="description" maxlength="500" placeholder="A short description (optional)">
+      </div>
+      <label class="pill-check pill-check--toggle">
+        <input type="checkbox" name="is_public"> Public
+      </label>
+      <button type="submit" class="btn btn--gold">Create</button>
+    </form>
+  </div>
+
+  {% if my_lists %}
+    <section class="reveal-row">
+      <h2 class="row-title">My Lists</h2>
+      <div class="lists-grid">
+        {% for lst in my_lists %}
+          <div class="list-card glass-card" data-list-card>
+            <a class="list-card__link" href="{{ url_for('view_list', list_id=lst.id) }}">
+              {% if lst.preview %}
+                <div class="list-card__preview">
+                  {% for poster in lst.preview[:4] %}
+                    <img src="{{ poster }}" alt="" loading="lazy">
+                  {% endfor %}
+                </div>
+              {% endif %}
+              <h3>{{ lst.name }}</h3>
+              <p>{{ lst.description or 'No description' }}</p>
+              <div class="list-card__meta">
+                <span class="chip">{{ lst.count }} titles</span>
+                {% if lst.is_official %}<span class="chip chip--gold">Official</span>{% elif lst.is_public %}<span class="chip">Public</span>{% else %}<span class="chip">Private</span>{% endif %}
+              </div>
+            </a>
+            <button class="btn btn--danger btn--sm" data-role="delete-list" data-id="{{ lst.id }}">Delete</button>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  {% if public_lists %}
+    <section class="reveal-row">
+      <h2 class="row-title">From the Community</h2>
+      <div class="lists-grid">
+        {% for lst in public_lists %}
+          <a class="list-card glass-card" href="{{ url_for('view_list', list_id=lst.id) }}">
+            {% if lst.preview %}
+              <div class="list-card__preview">
+                {% for poster in lst.preview[:4] %}
+                  <img src="{{ poster }}" alt="" loading="lazy">
+                {% endfor %}
+              </div>
+            {% endif %}
+            <h3>{{ lst.name }}</h3>
+            <p>{{ lst.description or 'No description' }}</p>
+            <div class="list-card__meta">
+              <span class="chip">{{ lst.count }} titles</span>
+              <span class="chip">by {{ lst.username }}</span>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% set row_title = row.title %}
+{% set row_movies = row.movies %}
+{% set row_link = row.link %}
+<section class="carousel-row reveal-row" data-row>
+  <div class="carousel-row__header">
+    <div>
+      <h2 class="row-title">{{ row_title }}</h2>
+      <span class="section-accent-line" aria-hidden="true"></span>
+    </div>
+    {% if row_link %}
+      <a class="row-seeall" href="{{ row_link }}">See All <span aria-hidden="true">&rarr;</span></a>
+    {% endif %}
+  </div>
+  <div class="carousel" data-scroll-row>
+    <button class="carousel__arrow carousel__arrow--left" data-arrow="-1" aria-label="Scroll left" hidden>
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+    </button>
+    <button class="carousel__arrow carousel__arrow--right" data-arrow="1" aria-label="Scroll right" hidden>
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+    </button>
+    <div class="carousel__track">
+      {% for movie in row_movies %}
+        <div class="carousel__item">
+          {% if row.ranked %}
+            {% set rank = loop.index %}
+            <div class="rank-badge rank-badge--{{ 'gold' if rank == 1 else 'silver' if rank == 2 else 'bronze' if rank == 3 else 'plain' }}" data-rank="{{ rank }}" aria-label="Rank {{ rank }}">
+              <span class="rank-badge__num">{{ rank }}</span>
+            </div>
+          {% endif %}
+          {% with movie=movie %}{% include "components/_card.html" %}{% endwith %}
+        </div>
+      {% endfor %}
+      {% if not row_movies %}
+        {% for _ in range(8) %}
+          <div class="carousel__item">{% include "components/_card_skeleton.html" %}</div>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</section>

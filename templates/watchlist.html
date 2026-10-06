@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}My List — {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-shell page-shell--top">
+  <header class="page-head">
+    <h1 class="page-title">My List</h1>
+    <p class="page-lede">{% if wl_stats %}{{ wl_stats.total }} titles saved · {{ wl_stats.watched }} watched · {{ wl_stats.series }} series · {{ wl_stats.movies }} movies{% else %}Start building your next great watchlist.{% endif %}</p>
+  </header>
+
+  {% if cards %}
+    <div class="watchlist-toolbar glass-panel" id="watchlistToolbar">
+      <div class="pill-row">
+        <span class="active-filters__label">View</span>
+        <button class="pill is-active" data-view="grid">Grid</button>
+        <button class="pill" data-view="list">List</button>
+      </div>
+      <div class="pill-row">
+        <span class="active-filters__label">Sort</span>
+        <select class="select" id="wlSort">
+          <option value="added">Date Added</option>
+          <option value="title">Title</option>
+          <option value="rating">Rating</option>
+          <option value="year">Release Year</option>
+        </select>
+      </div>
+      <div class="pill-row">
+        <span class="active-filters__label">Filter</span>
+        <select class="select" id="wlFilterType">
+          <option value="">All Types</option>
+          <option value="movie">Movies</option>
+          <option value="tv">Series</option>
+        </select>
+        <select class="select" id="wlFilterStatus">
+          <option value="">All Status</option>
+          <option value="watched">Watched</option>
+          <option value="unwatched">Unwatched</option>
+        </select>
+        <select class="select" id="wlFilterGenre">
+          <option value="">All Genres</option>
+          {% for g in genre_options %}
+            <option value="{{ g.name }}">{{ g.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="watchlist-toolbar__actions">
+        <a class="btn btn--glass" href="{{ url_for('export_watchlist') }}">Export CSV</a>
+        <a class="btn btn--glass" href="{{ url_for('user_public_watchlist', username=current_user.username) }}">Share</a>
+      </div>
+    </div>
+
+    <div class="watchlist-stats" aria-hidden="true">
+      {% for g, n in (wl_genre_counts.items() | list)[:6] %}
+        <span class="chip">{{ g }} · {{ n }}</span>
+      {% endfor %}
+    </div>
+
+    <div class="results-grid results-grid--{{ view or 'grid' }}" id="watchlistGrid" data-watchlist-grid>
+      {% for movie in cards %}
+        <div class="grid-cell" data-cell>{% with movie=movie %}{% include "components/_card.html" %}{% endwith %}</div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <svg width="72" height="72" viewBox="0 0 72 72" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+        <path d="M6 6h24M6 18h24M6 30h14"/>
+        <path d="M40 14h26M50 24h16M58 34h8" opacity=".5"/>
+        <rect x="8" y="44" width="56" height="20" rx="4" opacity=".35"/>
+      </svg>
+      <h3>Your next great watch belongs here.</h3>
+      <p>Open any title and hit the bookmark to start building your personal list.</p>
+      <a class="btn btn--gold" href="{{ url_for('home') }}">Discover Titles</a>
+    </div>
+  {% endif %}
+</div>
+
+<script type="application/json" id="watchlistMeta">{{ { "cards": cards } | tojson }}</script>
+{% endblock %}

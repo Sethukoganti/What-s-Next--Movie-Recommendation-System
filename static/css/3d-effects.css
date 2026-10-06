@@ -1,0 +1,149 @@
+/* =========================================================
+   What's Next? — 3D & futuristic effects
+   Holographic cinema cards, neon accents, depth helpers.
+   Composes with the existing inline tilt from animations.js
+   (which sets transform on .card) by enhancing inner layers.
+   ========================================================= */
+
+:root {
+  --holo: rgba(0, 212, 255, 0.09);
+  --neon-glow: 0 0 15px var(--accent);
+}
+
+html[data-theme="light"] { --holo: rgba(0, 153, 204, 0.06); }
+
+/* ---------- Holographic reflection pass over cards ---------- */
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  z-index: 7;
+  background: radial-gradient(
+    circle 220px at var(--glare-x, 50%) var(--glare-y, 50%),
+    rgba(255, 255, 255, 0.22) 0%,
+    rgba(255, 215, 0, 0.08) 35%,
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.25s var(--ease);
+  pointer-events: none;
+  mix-blend-mode: overlay;
+}
+.card:hover::before { opacity: 1; }
+
+html[data-theme="light"] .card::before {
+  background: radial-gradient(
+    circle 200px at var(--glare-x, 50%) var(--glare-y, 50%),
+    rgba(255, 255, 255, 0.65) 0%,
+    rgba(212, 168, 67, 0.15) 35%,
+    transparent 75%
+  );
+  mix-blend-mode: soft-light;
+}
+
+/* ---------- Ambient glow floating behind the poster ---------- */
+.card__poster::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(130% 90% at 50% 18%, var(--accent-soft), transparent 62%),
+    radial-gradient(150% 130% at 88% 100%, var(--holo), transparent 72%);
+  opacity: 0;
+  filter: blur(18px);
+  transform: scale(1.08);
+  transition: opacity 0.4s var(--ease);
+  pointer-events: none;
+  z-index: 1;
+}
+.card:hover .card__poster::after { opacity: 1; }
+
+/* ---------- Pop interactive layers while hovering ---------- */
+.card:hover .card__bookmark { z-index: 9; }
+.card:hover .card__type-pill { z-index: 9; }
+.card:hover .card__rating { z-index: 9; }
+
+/* ---------- Neon accent lines ---------- */
+.neon-hr {
+  height: 1px;
+  margin: 0 auto;
+  width: min(90%, var(--maxw));
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0.5;
+  box-shadow: var(--neon-glow);
+}
+
+/* ---------- Section header accent line ---------- */
+.section-accent-line {
+  display: inline-block;
+  width: 44px;
+  height: 3px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-gold));
+  box-shadow: 0 0 12px var(--accent-soft);
+  margin: 10px 0 14px;
+}
+
+/* ---------- Rank badges for "Top Movies of All Time" ---------- */
+.rank-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 10;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  color: var(--text);
+  font-weight: 900;
+  font-size: 1.05rem;
+  letter-spacing: 0.02em;
+  background: linear-gradient(160deg, rgba(255,255,255,0.16), rgba(255,255,255,0.02));
+  border: 1px solid var(--border-strong);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: var(--shadow-1);
+  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+}
+.rank-badge__num { line-height: 1; }
+.carousel__item:hover .rank-badge {
+  transform: scale(1.12);
+  box-shadow: var(--shadow-2);
+  z-index: 12;
+}
+.rank-badge--gold {
+  color: #1a1205;
+  background: linear-gradient(160deg, #ffe9a8, #d4a843 55%, #a87c1f);
+  border-color: rgba(255, 233, 168, 0.8);
+  box-shadow: 0 4px 16px rgba(212, 168, 67, 0.55), var(--glow-gold);
+}
+.rank-badge--silver {
+  color: #14141a;
+  background: linear-gradient(160deg, #f2f4f8, #c2c7d1 55%, #98a0ad);
+  border-color: rgba(242, 244, 248, 0.8);
+  box-shadow: 0 4px 14px rgba(150, 160, 173, 0.4);
+}
+.rank-badge--bronze {
+  color: #221206;
+  background: linear-gradient(160deg, #f0c9a0, #c97d45 55%, #a05a2a);
+  border-color: rgba(240, 201, 160, 0.8);
+  box-shadow: 0 4px 14px rgba(201, 125, 69, 0.45);
+}
+
+/* ---------- Focus glow ring on cards ---------- */
+.card:focus-within {
+  outline: none;
+  box-shadow: var(--shadow-2), 0 0 0 5px var(--accent-soft);
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .card::before,
+  .card__poster::after {
+    opacity: 0 !important;
+    transition: none !important;
+  }
+}

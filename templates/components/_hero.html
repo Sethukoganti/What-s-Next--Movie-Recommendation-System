@@ -1,0 +1,78 @@
+{% if heroes %}
+  <script type="application/json" id="heroData">{{ heroes|tojson }}</script>
+  <section class="hero" id="hero" aria-label="Featured title">
+    <div class="hero__stage" id="heroStage">
+      {% for h in heroes %}
+        <div class="hero__slide{% if loop.first %} is-active{% endif %}" data-hero-slide="{{ loop.index0 }}" {% if not loop.first %}aria-hidden="true"{% endif %}>
+          <img class="hero__backdrop" src="{{ h.Backdrop }}" alt="" fetchpriority="high" loading="eager" decoding="async" data-kenburns>
+          <div class="hero__veil hero__veil--base"></div>
+          <div class="hero__veil hero__veil--fade"></div>
+          <div class="hero__veil hero__veil--top"></div>
+          <div class="hero__veil hero__veil--vignette"></div>
+          <div class="hero__dust" aria-hidden="true"></div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="hero__content">
+      <div class="hero__glass">
+        <p class="hero__kicker" id="heroKicker">WHAT'S NEXT? ORIGINAL</p>
+        <h1 class="hero__title" id="heroTitle">{{ heroes[0].Title }}</h1>
+        <div class="hero__meta" id="heroMeta">
+          {% if heroes[0].Rating %}
+            <span class="hero__score" id="heroScore">★ {{ "%.1f"|format(heroes[0].Rating) }}</span>
+          {% endif %}
+          <span id="heroYear">{{ heroes[0].Year or '' }}</span>
+          <span id="heroKind">{{ 'Series' if heroes[0].MediaType == 'tv' else 'Movie' }}</span>
+          <span id="heroDur">
+            {%- if heroes[0].MediaType == 'tv' and heroes[0].Seasons -%}
+              {{ heroes[0].Seasons }} Season{{ 's' if heroes[0].Seasons != 1 else '' }}
+            {%- elif heroes[0].Runtime -%}
+              {{ heroes[0].Runtime }} min
+            {%- endif -%}
+          </span>
+          <span class="hero__badge">HD</span>
+          {% if user_is_premium %}<span class="hero__badge hero__badge--premium">PREMIUM</span>{% endif %}
+        </div>
+        <p class="hero__desc" id="heroDesc">{{ heroes[0].Overview|truncate(200) }}</p>
+        <div class="hero__actions">
+          <button class="btn btn--gold hero__play" data-role="hero-play" data-id="{{ heroes[0].TmdbID }}" data-type="{{ heroes[0].MediaType }}" data-title="{{ heroes[0].Title }}" data-year="{{ heroes[0].Year or '' }}">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
+            Watch Trailer
+          </button>
+          <button class="btn btn--glass hero__info" data-role="hero-info" data-id="{{ heroes[0].TmdbID }}" data-type="{{ heroes[0].MediaType }}">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M12 11.5V16"/><path d="M12 8h.01"/></svg>
+            More Info
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero__dots" id="heroDots" aria-label="Featured titles">
+      {% for h in heroes %}
+        <button class="hero__dot{% if loop.first %} is-active{% endif %}" data-hero-dot="{{ loop.index0 }}" aria-label="Show {{ h.Title }}"></button>
+      {% endfor %}
+    </div>
+  </section>
+{% else %}
+  <section class="hero" id="hero">
+    <div class="hero__stage">
+      <div class="hero__slide is-active">
+        <div class="hero__noimg" aria-hidden="true"></div>
+        <div class="hero__veil hero__veil--base"></div>
+        <div class="hero__veil hero__veil--fade"></div>
+        <div class="hero__veil hero__veil--vignette"></div>
+      </div>
+    </div>
+    <div class="hero__content">
+      <div class="hero__glass">
+        <p class="hero__kicker">WHAT'S NEXT?</p>
+        <h1 class="hero__title">Discover What's Next.</h1>
+        <p class="hero__desc">Explore movies and series from around the world, rate what you watch, and keep a private journal of every experience.</p>
+        <div class="hero__actions">
+          <a class="btn btn--gold" href="/explore">Start Exploring</a>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endif %}

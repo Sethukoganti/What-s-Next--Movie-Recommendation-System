@@ -1,0 +1,38 @@
+<div class="cinematic-intro" id="cinematicIntro" aria-hidden="true" role="dialog" aria-label="Welcome">
+  <div class="intro-backdrop" aria-hidden="true">
+    <div class="intro-stars"></div>
+    <div class="intro-nebula"></div>
+    <div class="intro-volumetric">
+      <div class="intro-ray intro-ray--1"></div>
+      <div class="intro-ray intro-ray--2"></div>
+      <div class="intro-ray intro-ray--3"></div>
+    </div>
+  </div>
+
+  <div class="intro-stage-3d">
+    <div class="intro-orbit intro-orbit--1"></div>
+    <div class="intro-orbit intro-orbit--2"></div>
+    <div class="intro-orbit intro-orbit--3"></div>
+
+    <div class="intro-core">
+      <div class="intro-logo-prism">
+        {% set logo_size = 92 %}
+        {% set logo_id = "intro" %}
+        {% include "components/_logo.html" %}
+      </div>
+      <div class="intro-glow-pulse"></div>
+    </div>
+
+    <div class="intro-horizon"></div>
+
+    <div class="intro-subline">
+      <span class="intro-subline__text">CINEMATIC INTELLIGENCE &bull; DISCOVERY ENGINE</span>
+    </div>
+  </div>
+
+  <button class="intro-skip" id="introSkipBtn" type="button" aria-label="Skip intro animation">
+    <span>SKIP</span>
+    <kbd>ESC</kbd>
+  </button>
+</div>
+

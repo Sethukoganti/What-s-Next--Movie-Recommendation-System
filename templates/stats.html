@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}My Stats — {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-shell page-shell--top">
+  <header class="page-head">
+    <h1 class="page-title">Statistics</h1>
+    <p class="page-lede">A field report on your taste as a watcher.</p>
+  </header>
+
+  <section class="stat-cards">
+    <div class="stat-card glass-panel">
+      <span class="stat-card__value stat-card__value--mono" data-count="{{ user_stats.movies }}">{{ user_stats.movies }}</span>
+      <span class="stat-card__label">Movies Watched</span>
+    </div>
+    <div class="stat-card glass-panel">
+      <span class="stat-card__value stat-card__value--mono" data-count="{{ user_stats.series }}">{{ user_stats.series }}</span>
+      <span class="stat-card__label">Series Watched</span>
+    </div>
+    <div class="stat-card glass-panel">
+      <span class="stat-card__value stat-card__value--mono" data-count="{{ user_stats.hours }}">{{ user_stats.hours }}</span>
+      <span class="stat-card__label">Approx. Hours</span>
+    </div>
+    <div class="stat-card glass-panel">
+      <span class="stat-card__value stat-card__value--mono" data-count="{{ user_stats.avg_rating }}">{{ user_stats.avg_rating or '—' }}</span>
+      <span class="stat-card__label">Average Rating Given</span>
+    </div>
+    <div class="stat-card glass-panel">
+      <span class="stat-card__value">{{ user_stats.favorite_decade }}</span>
+      <span class="stat-card__label">Favorite Decade</span>
+    </div>
+    <div class="stat-card glass-panel">
+      <span class="stat-card__value">{{ user_stats.favorite_language }}</span>
+      <span class="stat-card__label">Favorite Language</span>
+    </div>
+  </section>
+
+  {% if community_avg is not none %}
+    <p class="comparison-note">
+      Your average is <span class="text-accent">{{ user_stats.avg_rating }}</span> vs the community's <span class="text-accent">{{ community_avg }}</span>.
+    </p>
+  {% endif %}
+
+  <section class="charts-grid">
+    <div class="chart-card glass-panel reveal-row">
+      <h2 class="row-title">Genre Distribution</h2>
+      <div class="chart-wrap"><canvas id="genreChart"></canvas></div>
+    </div>
+    <div class="chart-card glass-panel reveal-row">
+      <h2 class="row-title">Ratings Distribution</h2>
+      <div class="chart-wrap"><canvas id="ratingChart"></canvas></div>
+    </div>
+    <div class="chart-card chart-card--wide glass-panel reveal-row">
+      <h2 class="row-title">Rating Activity Over Time</h2>
+      <div class="chart-wrap"><canvas id="monthlyChart"></canvas></div>
+    </div>
+  </section>
+
+  <section class="heatmap glass-panel reveal-row">
+    <h2 class="row-title">Viewing Activity</h2>
+    {% if user_stats.monthly_activity %}
+      <div class="heatmap__grid" id="heatmapGrid">
+        {% for cell in user_stats.monthly_activity_sorted %}
+          <div class="heatmap__cell heatmap__cell--{{ cell.intensity }}" title="{{ cell.month }} — {{ cell.hours }}h watched">
+            <span class="heatmap__month">{{ cell.month }}</span>
+            <span class="heatmap__val">{{ cell.hours }}h</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="muted">Start opening titles to build your activity heatmap.</p>
+    {% endif %}
+  </section>
+</div>
+
+<script>
+  window.WN_STATS = {
+    genre_counts: {{ user_stats.genre_counts | tojson }},
+    ratings_distribution: {{ user_stats.ratings_distribution | tojson }},
+    monthly_ratings: {{ user_stats.monthly_ratings | tojson }}
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" defer></script>
+{% endblock %}

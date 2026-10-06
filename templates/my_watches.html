@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}My Experiences — {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-shell page-shell--top">
+  <header class="page-head">
+    <h1 class="page-title">My Experiences</h1>
+    <p class="page-lede">The journal of what you've watched — every review you've written lives here.</p>
+  </header>
+
+  {% if experiences %}
+    <div class="experience-list glass-panel">
+      {% for item in experiences %}
+        <article class="experience-entry" data-experience>
+          {% if item.poster %}
+            <a href="/title/{{ item.media_type }}/{{ item.tmdb_id }}" class="experience-entry__poster">
+              <img src="{{ item.poster }}" alt="{{ item.title }}" loading="lazy">
+            </a>
+          {% endif %}
+          <div class="experience-entry__body">
+            <h3>
+              {% if item.media_type == 'tv' %}<span class="type-chip type-chip--series">SERIES</span>{% else %}<span class="type-chip type-chip--movie">MOVIE</span>{% endif %}
+              {{ item.title }}{% if item.year %} <span class="muted">{{ item.year }}</span>{% endif %}
+            </h3>
+            {% if item.rating %}
+              <div class="star-row" data-stars="{{ item.rating }}" aria-label="{{ item.rating }} out of 5 stars">
+                {% for _ in range(5) %}<span class="star">&#9733;</span>{% endfor %}
+              </div>
+            {% endif %}
+            <p class="experience-entry__copy{% if item.spoiler %} is-spoiler{% endif %}"{% if item.spoiler %} data-spoiler-tag="true"{% endif %}>{{ item.experience }}</p>
+            <div class="experience-entry__actions">
+              {% if item.spoiler %}<small class="spoiler-note">contains spoilers</small>{% endif %}
+              <button class="remove-experience" type="button" data-role="delete-review" data-tmdb-id="{{ item.tmdb_id }}" data-media-type="{{ item.media_type }}">Remove</button>
+            </div>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <svg width="72" height="72" viewBox="0 0 72 72" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+        <path d="M18 8h36v56l-18-14-18 14z"/>
+        <path d="M26 26h20M26 34h14" opacity=".5" stroke-linecap="round"/>
+      </svg>
+      <h3>Your movie memories will live here.</h3>
+      <p>Open any title, write your personal experience, and save it to revisit later.</p>
+      <a class="btn btn--gold" href="{{ url_for('home') }}">Discover Titles</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

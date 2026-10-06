@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}{{ explore_label }} — {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-shell page-shell--top">
+  <header class="page-head">
+    <h1 class="page-title">{{ explore_label }}</h1>
+    {% if page_obj and page_obj.total %}
+      <p class="page-lede">{{ page_obj.total }} titles</p>
+    {% endif %}
+  </header>
+
+  <div class="results-grid" id="resultsGrid">
+    {% for movie in explore_results %}
+      <div class="grid-cell" data-cell>{% with movie=movie %}{% include "components/_card.html" %}{% endwith %}</div>
+    {% endfor %}
+    {% if not explore_results %}
+      <div class="empty-state">
+        <h3>No titles found</h3>
+        <p>Try another category — or explore the full catalog.</p>
+        <a class="btn btn--glass" href="{{ url_for('explore') }}">Explore</a>
+      </div>
+    {% endif %}
+  </div>
+
+  {% if page_obj and page_obj.has_more %}
+    <div class="load-more" id="loadMoreWrap">
+      <button class="btn btn--glass" id="loadMoreBtn">Load More</button>
+      <span class="load-more__spinner" id="loadMoreSpinner" hidden aria-hidden="true"></span>
+    </div>
+  {% endif %}
+
+  {% if category and category != 'user-watchlist' %}
+    <script type="application/json" id="categoryMeta">{{ { "category": category, "page": page_obj.page if page_obj else 1 } | tojson }}</script>
+  {% endif %}
+</div>
+{% endblock %}

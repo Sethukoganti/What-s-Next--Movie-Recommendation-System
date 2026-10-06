@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block title %}{{ app_name }} — Discover Your Next Great Watch{% endblock %}
+
+{% block content %}
+  {% with heroes=hero_titles %}
+    {% include "components/_hero.html" %}
+  {% endwith %}
+
+  <section class="discover-bar" id="discoverBar" aria-label="Find recommendations">
+    <form class="discover-form glass-panel" action="{{ url_for('recommend') }}" method="POST" id="pickerForm" autocomplete="off">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="pick pick--search">
+        <label for="movie_search">Find a Title</label>
+        <input type="text" id="movie_search" name="q" placeholder="Search any movie or series…" value="{{ selected.q }}" autocomplete="off">
+        <input type="hidden" id="tmdb_id" name="tmdb_id">
+        <input type="hidden" id="media_type" name="media_type" value="movie">
+        <div class="typeahead glass-panel" id="driveDropdown" hidden></div>
+      </div>
+      <div class="pick">
+        <label for="pickType">Type</label>
+        <select id="pickType" name="media_type">
+          <option value="">All Types</option>
+          <option value="movie" {% if selected.media_type == "movie" %}selected{% endif %}>Movies</option>
+          <option value="tv" {% if selected.media_type == "tv" %}selected{% endif %}>Series</option>
+        </select>
+      </div>
+      <div class="pick">
+        <label for="pickYear">Year</label>
+        <select id="pickYear" name="year">
+          <option value="">Any Year</option>
+          {% for y in years %}
+            <option value="{{ y }}" {% if selected.year == y|string %}selected{% endif %}>{{ y }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="pick">
+        <label for="pickGenre">Genre</label>
+        <select id="pickGenre" name="genre">
+          <option value="">Any Genre</option>
+          {% for g in genres %}
+            <option value="{{ g }}" {% if selected.genre == g %}selected{% endif %}>{{ g }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="pick">
+        <label for="pickLanguage">Language</label>
+        <select id="pickLanguage" name="language">
+          <option value="">Any Language</option>
+          {% for code, label in languages %}
+            <option value="{{ code }}" {% if selected.language == code %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="pick">
+        <label for="pickTopN">Picks</label>
+        <select id="pickTopN" name="top_n">
+          <option value="6">6</option>
+          <option value="10" selected>10</option>
+          <option value="15">15</option>
+          <option value="20">20</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn--gold discover-submit" id="submitBtn">
+        <span class="btn-text">Get Picks</span>
+        <span class="btn-spinner" aria-hidden="true"></span>
+      </button>
+    </form>
+  </section>
+
+  <div class="page-shell">
+    {% if explore_results is not none and explore_label %}
+      <section class="carousel-row reveal-row" data-row>
+        <div class="carousel-row__header">
+          <h2 class="row-title">{{ explore_label }}</h2>
+          <a class="row-seeall" href="/explore?q={{ selected.q }}">See All <span aria-hidden="true">&rarr;</span></a>
+        </div>
+        <div class="carousel" data-scroll-row>
+          <button class="carousel__arrow carousel__arrow--left" data-arrow="-1" aria-label="Scroll left" hidden>
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <button class="carousel__arrow carousel__arrow--right" data-arrow="1" aria-label="Scroll right" hidden>
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+          <div class="carousel__track">
+            {% for movie in explore_results %}
+              <div class="carousel__item">{% with movie=movie %}{% include "components/_card.html" %}{% endwith %}</div>
+            {% endfor %}
+          </div>
+        </div>
+      </section>
+    {% endif %}
+
+    {% if recommendations is not none and source_movie %}
+      <section class="carousel-row reveal-row" data-row>
+        <div class="carousel-row__header">
+          <h2 class="row-title">Because you liked <span class="text-accent">{{ source_movie.Movie }}</span></h2>
+        </div>
+        <div class="carousel" data-scroll-row>
+          <button class="carousel__arrow carousel__arrow--left" data-arrow="-1" aria-label="Scroll left" hidden>
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <button class="carousel__arrow carousel__arrow--right" data-arrow="1" aria-label="Scroll right" hidden>
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+          <div class="carousel__track">
+            {% for movie in recommendations %}
+              <div class="carousel__item">{% with movie=movie %}{% include "components/_card.html" %}{% endwith %}</div>
+            {% endfor %}
+          </div>
+        </div>
+      </section>
+    {% endif %}
+
+    <div id="personalRows">
+      {% for row in personalized_rows %}
+        {% with row=row %}{% include "components/_row.html" %}{% endwith %}
+      {% endfor %}
+    </div>
+
+    <div id="defaultRows">
+      {% for row in rows %}
+        {% with row=row %}{% include "components/_row.html" %}{% endwith %}
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}

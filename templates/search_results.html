@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Search — {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-shell page-shell--top">
+  <header class="page-head">
+    <h1 class="page-title">Search</h1>
+    <p class="page-lede">Find any movie or series across our catalog.</p>
+  </header>
+
+  <form class="search-hero-form" action="{{ url_for('search_page') }}" method="GET" id="searchPageForm">
+    <input type="search" name="q" id="searchPageInput" placeholder="Search titles…" value="{{ search_query or selected.q or '' }}" autofocus>
+    <div class="search-type-tabs" id="searchTypeTabs">
+      <button type="button" class="tab{% if not page_obj or not page_obj.media_type %} is-active{% endif %}" data-value="" data-key="media_type">Both</button>
+      <button type="button" class="tab{% if page_obj and page_obj.media_type == 'movie' %} is-active{% endif %}" data-value="movie" data-key="media_type">Movies</button>
+      <button type="button" class="tab{% if page_obj and page_obj.media_type == 'tv' %} is-active{% endif %}" data-value="tv" data-key="media_type">Series</button>
+    </div>
+    <div class="search-type-nav">
+      <a class="btn btn--gold" href="#" id="searchGo">Search</a>
+    </div>
+  </form>
+
+  <div class="search-helptext" id="searchHelptext">
+    <span class="search-helptext__label">Trending searches</span>
+    <div class="pill-row" data-trending>
+      {% for term in ["Interstellar", "Dune", "Inception", "Breaking Bad", "Money Heist", "RRR", "Parasite"] %}
+        <button class="pill" data-trending-term="{{ term }}">{{ term }}</button>
+      {% endfor %}
+    </div>
+    <div class="pill-row" id="recentSearches" data-recent hidden>
+      <span class="search-helptext__label">Recent</span>
+      <div id="recentChips"></div>
+    </div>
+  </div>
+</div>
+
+<div class="page-shell">
+  {% if search_results %}
+    <div class="results-meta">
+      <h2 class="row-title">{{ explore_label }}</h2>
+    </div>
+    <div class="results-grid" id="resultsGrid">
+      {% for movie in search_results %}
+        <div class="grid-cell" data-cell>{% with movie=movie %}{% include "components/_card.html" %}{% endwith %}</div>
+      {% endfor %}
+    </div>
+
+    {% if page_obj and page_obj.has_more %}
+      <div class="load-more" id="loadMoreWrap">
+        <button class="btn btn--glass" id="loadMoreBtn">Load More</button>
+        <span class="load-more__spinner" id="loadMoreSpinner" hidden aria-hidden="true"></span>
+      </div>
+    {% endif %}
+
+    {% if page_obj and page_obj.page > 1 %}
+      <nav class="pager" aria-label="Pagination">
+        <a class="btn btn--glass" href="{{ url_for('search_page', q=page_obj.q, media_type=page_obj.media_type, page=page_obj.page - 1) }}">&larr; Prev</a>
+        <span class="pager__pos">Page {{ page_obj.page }}</span>
+      </nav>
+    {% endif %}
+
+  {% elif search_query %}
+    <div class="empty-state">
+      <svg width="64" height="64" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="27" cy="27" r="16"/><path d="m39 39 12 12" stroke-linecap="round"/></svg>
+      <h3>No results for “{{ search_query }}”</h3>
+      <p>Try searching for something else. Spellings matter, and shorter titles work best.</p>
+    </div>
+  {% endif %}
+</div>
+
+<script type="application/json" id="searchMeta">{{ { "q": search_query or "", "media_type": page_obj.media_type if page_obj else "", "page": page_obj.page if page_obj else 1, "has_more": page_obj.has_more if page_obj else false } | tojson }}</script>
+{% endblock %}

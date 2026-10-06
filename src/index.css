@@ -1,0 +1,68 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  font-family: Inter, 'Segoe UI', sans-serif;
+  color: #fff;
+  background: #07080d;
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #07080d;
+  color: #fff;
+  font-family: Inter, 'Segoe UI', sans-serif;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+button,
+a,
+input {
+  font: inherit;
+}
+
+button,
+a {
+  transition: all 0.2s ease;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.04);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(229, 9, 20, 0.8);
+  border-radius: 999px;
+}
+
+::selection {
+  background: rgba(229, 9, 20, 0.7);
+  color: white;
+}
+

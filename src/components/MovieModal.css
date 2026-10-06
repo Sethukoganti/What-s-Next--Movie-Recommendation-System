@@ -1,0 +1,24 @@
+.modal-backdrop { position: fixed; inset: 0; z-index: 9990; background: rgba(5,5,10,0.92); backdrop-filter: blur(30px); display: flex; align-items: flex-start; justify-content: center; padding: 40px 20px; overflow-y: auto; }
+.modal-panel { position: relative; width: 100%; max-width: 920px; background: var(--bg-secondary); border-radius: 24px; overflow: hidden; box-shadow: var(--shadow-xl, 0 30px 80px rgba(0,0,0,0.7)); border: 1px solid rgba(255,22,79,0.22); }
+.modal-close { position: absolute; top: 16px; right: 16px; z-index: 10; background: rgba(0,0,0,0.6); border: none; border-radius: 50%; color: white; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.2s; }
+.modal-close:hover { background: rgba(255,22,79,0.9); }
+.modal-hero { height: 320px; background-size: cover; background-position: top; position: relative; }
+.modal-hero-gradient { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(5,5,10,0.2) 0%, rgba(5,5,10,0.6) 60%, var(--bg-secondary) 100%); }
+.modal-content { padding: 28px; }
+.modal-header h2 { font-size: 2.2rem; margin: 0 0 6px; letter-spacing: -0.02em; color: var(--text-primary); }
+.modal-meta { display: flex; gap: 14px; color: var(--text-tertiary); font-size: 0.95rem; }
+.modal-body p { line-height: 1.7; color: var(--text-secondary); font-size: 1.05rem; }
+.modal-tags { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+.modal-tag { background: rgba(255,22,79,0.12); color: var(--accent-primary); padding: 4px 10px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; }
+.modal-actions { display: flex; gap: 12px; margin-top: 20px; }
+.modal-similar { margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--card-border); }
+.modal-similar h3 { font-size: 1.2rem; margin-bottom: 14px; }
+.similar-row { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; }
+.similar-card { flex: 0 0 80px; text-align: center; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 8px; cursor: pointer; transition: transform 0.2s, border-color 0.2s; }
+.similar-card:hover { transform: translateY(-4px); border-color: var(--accent-primary); }
+.similar-card img { width: 60px; height: 90px; object-fit: cover; border-radius: 4px; margin-bottom: 6px; }
+.similar-card span { font-size: 0.75rem; color: var(--text-secondary); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 768px) { .modal-hero { height: 220px; } .modal-header h2 { font-size: 1.4rem; } .modal-panel { border-radius: 16px; } }
+/* Glassmorphism depth — accurate backdrop-filter + inner gradient */
+.movie-modal-card { backdrop-filter: blur(24px) saturate(160%); -webkit-backdrop-filter: blur(24px) saturate(160%); background: rgba(10,10,14,0.72); border: 1px solid rgba(255,255,255,0.08); box-shadow: inset 0 0 80px rgba(255,22,79,0.06), 0 25px 60px rgba(0,0,0,0.5); }
+.modal-hero::after { content:''; position:absolute; inset:0; background: linear-gradient(180deg, rgba(255,22,79,0.08) 0%, transparent 60%); pointer-events:none; border-radius:inherit; }

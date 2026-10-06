@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}{{ profile_user.display_name }} — {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="page-shell page-shell--top">
+  <section class="profile-hero glass-panel">
+    <img class="profile-hero__avatar" src="{{ profile_user.avatar_url }}" alt="" width="128" height="128">
+    <div class="profile-hero__info">
+      <h1 class="page-title">{{ profile_user.display_name }}</h1>
+      <p class="muted">@{{ profile_user.username }} · joined {{ profile_user.created_at | smartdate('%b %Y') }}</p>
+      {% if current_user.is_authenticated and current_user.username == profile_user.username %}
+        <a class="btn btn--glass btn--sm" href="{{ url_for('profile') }}">Edit Profile</a>
+      {% endif %}
+    </div>
+    <div class="profile-side__stats">
+      <div><strong>{{ stats.watchlist }}</strong><span>Saved</span></div>
+      <div><strong>{{ stats.ratings }}</strong><span>Ratings</span></div>
+      <div><strong>{{ review_items | length }}</strong><span>Reviews</span></div>
+      <div><strong>{{ lists | length }}</strong><span>Lists</span></div>
+    </div>
+  </section>
+
+  {% if profile_user.bio %}
+    <p class="profile-bio">{{ profile_user.bio }}</p>
+  {% endif %}
+
+  <section class="reveal-row">
+    <div class="carousel-row__header">
+      <h2 class="row-title">Latest Reviews</h2>
+      <a class="text-link" href="{{ url_for('user_public_watchlist', username=profile_user.username) }}">Watchlist &rarr;</a>
+    </div>
+    {% if review_items %}
+      <div class="community-feed community-feed--compact">
+        {% for item in review_items %}
+          <article class="review-card glass-panel" data-review-card>
+            <div class="review-card__title">
+              {% if item.card %}
+                {% if item.card.MediaType == 'tv' %}<span class="type-chip type-chip--series">SERIES</span>{% else %}<span class="type-chip type-chip--movie">MOVIE</span>{% endif %}
+                <a href="/title/{{ item.card.MediaType }}/{{ item.card.TmdbID }}">{{ item.card.Movie }}</a>
+                {% if item.card.Year %}<span class="muted">{{ item.card.Year }}</span>{% endif %}
+              {% endif %}
+            </div>
+            {% if item.rating %}
+              <div class="star-row" data-stars="{{ item.rating }}" aria-label="{{ item.rating }} / 5">
+                {% for _ in range(5) %}<span class="star">&#9733;</span>{% endfor %}
+              </div>
+            {% endif %}
+            <p class="review-card__copy{% if item.spoiler %} is-spoiler{% endif %}"{% if item.spoiler %} data-spoiler-tag="true"{% endif %}>{{ item.experience }}</p>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="muted">{{ profile_user.display_name }} hasn't written any reviews yet.</p>
+    {% endif %}
+  </section>
+
+  {% if lists %}
+    <section class="reveal-row">
+      <h2 class="row-title">Public Lists</h2>
+      <div class="lists-grid">
+        {% for lst in lists %}
+          <a class="list-card glass-card" href="{{ url_for('view_list', list_id=lst.id) }}">
+            {% if lst.preview %}
+              <div class="list-card__preview">
+                {% for poster in lst.preview %}
+                  <img src="{{ poster }}" alt="" loading="lazy">
+                {% endfor %}
+              </div>
+            {% endif %}
+            <h3>{{ lst.name }}</h3>
+            <p>{{ lst.description or '' }}</p>
+            <span class="chip">{{ lst.count }} titles</span>
+          </a>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+</div>
+{% endblock %}

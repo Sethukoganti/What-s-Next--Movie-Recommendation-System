@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Something Went Wrong — {{ app_name }}{% endblock %}
+{% block body_class %}error-page{% endblock %}
+
+{% block content %}
+<div class="error-shell">
+  <div class="error-code" aria-hidden="true">500</div>
+  <h1 class="error-title">{{ error_message or 'Something went wrong on our side.' }}</h1>
+  <p class="error-copy">Our engineers have been alerted. Give us a moment and try again.</p>
+  <div class="error-actions">
+    <a class="btn btn--gold" href="{{ url_for('home') }}">Back to Home</a>
+  </div>
+</div>
+{% endblock %}
